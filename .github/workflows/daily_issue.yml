@@ -2,9 +2,9 @@ name: Daily Issue Automation (Growth OS v2)
 
 on:
   # Cron uses UTC. Beijing = UTC+8 with no daylight saving time.
-  # Beijing 09:00 (UTC+8) → UTC 01:00.
+  # Beijing 10:00 (UTC+8) → UTC 02:00.
   schedule:
-    - cron: '0 1 * * 1-5'
+    - cron: '0 2 * * 1-5'
   workflow_dispatch:
 
 permissions:

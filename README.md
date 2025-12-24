@@ -4,6 +4,7 @@
 
 ## 核心功能
 - **自动 Daily（工作日 09:00 北京时间）**：标题 `YYYY-MM-DD Daily`，基础三问+轮换训练模块（BASE / THINKING / RADAR / VALUE），每日练习不同侧重点。
+ - **自动 Daily（工作日 10:00 北京时间）**：标题 `YYYY-MM-DD Daily`，基础三问+轮换训练模块（BASE / THINKING / RADAR / VALUE），每日练习不同侧重点。
 - **自动 Weekly（周五 18:00 北京时间）**：标题 `YYYY-W## Weekly`，按 ISO 周序记录周复盘与价值总结。
 - **训练模块轮换**：以北京时间日期为种子，4 个模块循环：
   - BASE：基础三问 + 情绪能量
@@ -19,7 +20,7 @@
    - 手动在 Issues > Labels 创建：`daily`, `weekly`, `insight`, `thinking` 以及可选的 `skill:*`, `mindset:*`, `habit:*`。
    - 或运行可选 workflow `Bootstrap labels for Growth OS v2`（在 Actions 页手动触发 `labels_bootstrap.yml`）。
 3. **确认定时任务**：
-   - Daily：cron `0 1 * * 1-5`（UTC），对应 **北京时间=UTC+8** 的 09:00，全年无夏令时。
+   - Daily：cron `0 2 * * 1-5`（UTC），对应 **北京时间=UTC+8** 的 10:00，全年无夏令时。
    - Weekly：cron `0 10 * * 5`（UTC），对应 **北京时间=UTC+8** 的周五 18:00。
    - 如需调整本地时间，修改 workflow 内的 cron，并在注释中更新说明。
 4. **手动触发**：所有 workflow 均支持 `workflow_dispatch`，可在 Actions 页面即时创建当日/当周 Issue。
