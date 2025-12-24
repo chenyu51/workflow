@@ -26,6 +26,15 @@ jobs:
             const beijing = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
             const datePart = `${beijing.getFullYear()}-${String(beijing.getMonth() + 1).padStart(2, '0')}-${String(beijing.getDate()).padStart(2, '0')}`;
 
+            // Beijing weeks run Monday 00:00 to Sunday 23:59:59 (UTC+8).
+            const beijingWeekday = beijing.getDay() === 0 ? 7 : beijing.getDay();
+            const weekStart = new Date(beijing);
+            weekStart.setHours(0, 0, 0, 0);
+            weekStart.setDate(weekStart.getDate() - (beijingWeekday - 1));
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            weekEnd.setHours(23, 59, 59, 999);
+
             const target = new Date(Date.UTC(beijing.getFullYear(), beijing.getMonth(), beijing.getDate()));
             const dayNum = target.getUTCDay() || 7;
             target.setUTCDate(target.getUTCDate() + 4 - dayNum);
@@ -46,6 +55,34 @@ jobs:
               return;
             }
 
+            const since = new Date(beijing);
+            since.setDate(since.getDate() - 30);
+            const allIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100,
+              since: since.toISOString(),
+            });
+
+            const dailyPattern = /^(\d{4}-\d{2}-\d{2}) Daily$/;
+            const dailyIssues = allIssues
+              .filter((issue) => !issue.pull_request)
+              .map((issue) => {
+                const match = issue.title.match(dailyPattern);
+                if (!match) return null;
+                const dayString = match[1];
+                const dayDate = new Date(`${dayString}T00:00:00+08:00`);
+                return { dayString, dayDate, number: issue.number, url: issue.html_url };
+              })
+              .filter(Boolean)
+              .filter(({ dayDate }) => dayDate >= weekStart && dayDate <= weekEnd)
+              .sort((a, b) => a.dayString.localeCompare(b.dayString));
+
+            const dailyList = dailyIssues.length
+              ? dailyIssues.map((item) => `- ${item.dayString}: [#${item.number}](${item.url})`).join('\n')
+              : '- （本周未找到 Daily 记录）';
+
             async function ensureLabel(name) {
               try {
                 await github.rest.issues.getLabel({ owner, repo, name });
@@ -59,7 +96,9 @@ jobs:
             }
             await ensureLabel('weekly');
 
-            const body = `### 周期\n${title}（北京时间周序）\n\n## 本周我在哪些方面真实成长了？\n- [ ]\n\n## 哪些是“看似努力但没拉开差距”的事？\n- [ ]\n\n## 本周结构化思考：我掌握了什么“框架”？\n- [ ]\n\n## 本周外部雷达：哪条信息最值得持续关注？为什么？\n- [ ]\n\n## 本周价值复盘：我为团队/公司带来的最大价值是什么？证据是什么？\n- [ ]\n\n## 下周只保留 1 个强化点，它是什么？（重点+行动）\n- [ ]\n\n参考日期（北京时间）：${datePart}`;
+            const promptBlock = `## 🤖 复制给 ChatGPT 的提示词\n\n\`\`\`text\n你是我的成长教练/职业教练/结构化思考教练。\n输入：我将提供本周 Weekly Issue 内容；并且你已经在 prompt 中内嵌了本周 Daily 链接列表（见下方）。\n你要完成的输出（按编号小标题，简短可执行）：\n1) 本周总结（事实层，3-7条）\n2) 本周成长（能力/思维/习惯 各 1-2 条）\n3) 结构化思考反馈：识别我常用结构、缺口、给 1 个下周可执行改进点\n4) 价值提炼：从“对客户/效率/风险/协作沉淀”4个视角各给 1 条价值表述\n5) 下周计划：只选 1 个强化点 + 3 个行动 + 1 个衡量指标\n6) 产出 3 条可写进周报/绩效/简历的一句话 bullet（尽量可量化、可证据化）\n强制要求：结论要“具体、短、可执行”，避免空泛；必要时提出 3 个追问来补齐证据。\n这是我本周的 Daily 链接列表（按日期）：\n${dailyList}\n\`\`\``;
+
+            const body = `### 周期\n${title}（北京时间周序）\n\n## 本周范围（北京时间）\n周一 00:00 - 周日 23:59。参考日期：${datePart}\n\n## 本周 Daily 链接\n${dailyList}\n\n${promptBlock}\n\n## 本周我在哪些方面真实成长了？\n- [ ]\n\n## 哪些是“看似努力但没拉开差距”的事？\n- [ ]\n\n## 本周结构化思考：我掌握了什么“框架”？\n- [ ]\n\n## 本周外部雷达：哪条信息最值得持续关注？为什么？\n- [ ]\n\n## 本周价值复盘：我为团队/公司带来的最大价值是什么？证据是什么？\n- [ ]\n\n## 下周只保留 1 个强化点，它是什么？（重点+行动）\n- [ ]\n\n参考日期（北京时间）：${datePart}`;
 
             await github.rest.issues.create({
               owner,
