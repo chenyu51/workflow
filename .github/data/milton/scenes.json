@@ -1,0 +1,173 @@
+[
+  {
+    "id": "s01",
+    "name": "解释复杂问题",
+    "aliases": ["讲清楚复杂度", "解释方案"],
+    "description": "把复杂或抽象的方案翻译成对方能抓住的点。",
+    "goals": ["降低理解成本", "让对方看到关键价值"],
+    "signals": ["太复杂", "听不懂", "抽象"],
+    "recommended_pattern_ids": ["p14", "p09", "p12"]
+  },
+  {
+    "id": "s02",
+    "name": "对齐认知",
+    "aliases": ["达成共识", "对齐理解"],
+    "description": "澄清不同视角，形成共同框架。",
+    "goals": ["收敛理解", "减少反复沟通"],
+    "signals": ["误解", "对不上", "理解不一致"],
+    "recommended_pattern_ids": ["p05", "p23", "p11"]
+  },
+  {
+    "id": "s03",
+    "name": "推进决策",
+    "aliases": ["促成决定", "推动拍板"],
+    "description": "让讨论从拖延转向选择和行动。",
+    "goals": ["锁定选项", "明确责任与节奏"],
+    "signals": ["犹豫", "迟迟不定", "要不要"],
+    "recommended_pattern_ids": ["p07", "p16", "p22"]
+  },
+  {
+    "id": "s04",
+    "name": "争取资源",
+    "aliases": ["要人要预算", "申请支持"],
+    "description": "为项目争取时间、人力或预算支持。",
+    "goals": ["获得资源", "降低阻力"],
+    "signals": ["资源有限", "不支持", "排期冲突"],
+    "recommended_pattern_ids": ["p21", "p11", "p10"]
+  },
+  {
+    "id": "s05",
+    "name": "说服/拒绝",
+    "aliases": ["反对", "拒绝需求"],
+    "description": "在拒绝或提出不同意见时保持合作氛围。",
+    "goals": ["表达立场", "降低冲突"],
+    "signals": ["不同意", "拒绝", "担心"],
+    "recommended_pattern_ids": ["p19", "p23", "p20"]
+  },
+  {
+    "id": "s06",
+    "name": "澄清误解",
+    "aliases": ["纠偏", "解释误会"],
+    "description": "修正对方的错误理解，找回合作基础。",
+    "goals": ["纠正认知", "保留信任"],
+    "signals": ["误会", "曲解", "信息不完整"],
+    "recommended_pattern_ids": ["p20", "p05", "p17"]
+  },
+  {
+    "id": "s07",
+    "name": "降低冲突",
+    "aliases": ["缓和争执", "降温"],
+    "description": "在情绪紧张时让对话可继续。",
+    "goals": ["降低情绪", "让对话回到问题"],
+    "signals": ["吵", "情绪", "火药味"],
+    "recommended_pattern_ids": ["p19", "p23", "p20"]
+  },
+  {
+    "id": "s08",
+    "name": "复盘与反思",
+    "aliases": ["总结教训", "回顾"],
+    "description": "总结经验，形成可复用的改进。",
+    "goals": ["提炼经验", "形成改进方案"],
+    "signals": ["复盘", "总结", "教训"],
+    "recommended_pattern_ids": ["p18", "p11", "p12"]
+  },
+  {
+    "id": "s09",
+    "name": "推进协作",
+    "aliases": ["跨部门合作", "对齐协作"],
+    "description": "让多方协同有节奏、有分工。",
+    "goals": ["明确接口", "减少摩擦"],
+    "signals": ["合作", "跨团队", "衔接"],
+    "recommended_pattern_ids": ["p05", "p07", "p22"]
+  },
+  {
+    "id": "s10",
+    "name": "风险沟通",
+    "aliases": ["提醒风险", "曝光问题"],
+    "description": "在有风险或坏消息时，稳住情绪并推动应对。",
+    "goals": ["让风险被正视", "推动预案"],
+    "signals": ["风险", "坏消息", "延期"],
+    "recommended_pattern_ids": ["p21", "p10", "p17"]
+  },
+  {
+    "id": "s11",
+    "name": "获取反馈",
+    "aliases": ["收集意见", "听取建议"],
+    "description": "邀请对方给出建设性反馈，避免评判感。",
+    "goals": ["得到可用反馈", "建立参与感"],
+    "signals": ["反馈", "建议", "看法"],
+    "recommended_pattern_ids": ["p05", "p10", "p20"]
+  },
+  {
+    "id": "s12",
+    "name": "排期与优先级",
+    "aliases": ["排计划", "优先级讨论"],
+    "description": "确定节奏和排序，减少反复更改。",
+    "goals": ["锁定顺序", "明确节奏"],
+    "signals": ["优先级", "排期", "顺序"],
+    "recommended_pattern_ids": ["p16", "p22", "p03"]
+  },
+  {
+    "id": "s13",
+    "name": "说服业务价值",
+    "aliases": ["商业价值", "业务意义"],
+    "description": "把技术或支持行动转译成业务指标价值。",
+    "goals": ["让业务买单", "说明收益"],
+    "signals": ["价值", "收益", "KPI"],
+    "recommended_pattern_ids": ["p21", "p12", "p18"]
+  },
+  {
+    "id": "s14",
+    "name": "教育新人",
+    "aliases": ["带新人", "新人培训"],
+    "description": "帮助新人快速理解脉络，降低信息过载。",
+    "goals": ["快速上手", "形成安全感"],
+    "signals": ["新人", "入职", "培训"],
+    "recommended_pattern_ids": ["p05", "p14", "p10"]
+  },
+  {
+    "id": "s15",
+    "name": "用户沟通",
+    "aliases": ["客户交流", "客户反馈"],
+    "description": "和客户或用户沟通需求、问题与价值。",
+    "goals": ["稳住信任", "获取需求或共识"],
+    "signals": ["客户", "用户", "客户担心"],
+    "recommended_pattern_ids": ["p20", "p21", "p18"]
+  },
+  {
+    "id": "s16",
+    "name": "节奏与边界管理",
+    "aliases": ["控制节奏", "设定边界"],
+    "description": "在需求膨胀或节奏混乱时设定边界。",
+    "goals": ["稳住节奏", "避免过载"],
+    "signals": ["太多", "加需求", "排不过来"],
+    "recommended_pattern_ids": ["p23", "p13", "p22"]
+  },
+  {
+    "id": "s17",
+    "name": "战略/愿景对齐",
+    "aliases": ["愿景沟通", "战略说明"],
+    "description": "用更高阶的意义和未来画面对齐团队方向。",
+    "goals": ["提升认同", "拉齐方向"],
+    "signals": ["愿景", "长期", "方向不一致"],
+    "recommended_pattern_ids": ["p15", "p21", "p14"]
+  },
+  {
+    "id": "s18",
+    "name": "资源受限时协商",
+    "aliases": ["资源紧张", "只能做一部分"],
+    "description": "在资源不足时重新聚焦共识和小步交付。",
+    "goals": ["收敛范围", "保留核心价值"],
+    "signals": ["只能做", "资源不够", "排期挤"],
+    "recommended_pattern_ids": ["p10", "p16", "p11"]
+  },
+  {
+    "id": "s19",
+    "name": "危机沟通",
+    "aliases": ["事故沟通", "突发问题"],
+    "description": "在紧急事件中稳住情绪并指向行动。",
+    "goals": ["减少恐慌", "快速行动"],
+    "signals": ["故障", "事故", "紧急"],
+    "recommended_pattern_ids": ["p09", "p21", "p22"]
+  }
+]

@@ -1,0 +1,176 @@
+name: Milton Adaptive Coach
+
+on:
+  issues:
+    types:
+      - edited
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  adapt-milton-block:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Adapt Milton block based on user input
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const issue = context.payload.issue;
+            if (!issue) {
+              core.info('No issue payload.');
+              return;
+            }
+
+            const titlePattern = /^\d{4}-\d{2}-\d{2} Daily$/;
+            if (!titlePattern.test(issue.title)) {
+              core.info('Not a Daily issue.');
+              return;
+            }
+
+            const body = issue.body || '';
+            const blockMatch = body.match(/<!-- MILTON_BLOCK_START -->([\s\S]*?)<!-- MILTON_BLOCK_END -->/);
+            if (!blockMatch) {
+              core.info('Milton block not found.');
+              return;
+            }
+
+            const blockContent = blockMatch[1];
+
+            function extractField(label) {
+              const lines = blockContent.split('\n');
+              const idx = lines.findIndex((line) => line.includes(label));
+              if (idx === -1) return '';
+              for (let i = idx + 1; i < lines.length; i += 1) {
+                const line = lines[i].trim();
+                if (line.startsWith('- ')) break;
+                if (line.startsWith('<!--')) break;
+                if (!line || line.replace(/_/g, '').trim() === '') continue;
+                if (line.startsWith('例')) continue;
+                return line.replace(/^[-•]\s*/, '');
+              }
+              const inline = lines[idx].split('：')[1];
+              return inline ? inline.trim() : '';
+            }
+
+            const scenario = extractField('今日真实沟通场景') || '';
+            const goal = extractField('我想达成的效果') || '';
+            const combined = `${scenario} ${goal}`.toLowerCase();
+
+            if (!combined.trim()) {
+              core.info('No scenario/effect provided; keep default.');
+              return;
+            }
+
+            function readMilton(fileName) {
+              const fullPath = path.join(process.cwd(), '.github', 'data', 'milton', fileName);
+              return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+            }
+
+            const patterns = readMilton('patterns.json');
+            const scenes = readMilton('scenes.json');
+            const patternMap = new Map(patterns.map((item) => [item.id, item]));
+
+            function scoreScene(scene) {
+              let score = 0;
+              const lowerName = scene.name.toLowerCase();
+              if (combined.includes(lowerName)) score += 3;
+              (scene.aliases || []).forEach((alias) => {
+                if (combined.includes(alias.toLowerCase())) score += 2;
+              });
+              (scene.signals || []).forEach((signal) => {
+                if (combined.includes(signal.toLowerCase())) score += 1;
+              });
+              return score;
+            }
+
+            const sceneRank = scenes
+              .map((scene, index) => ({ scene, score: scoreScene(scene), index }))
+              .filter((item) => item.score > 0)
+              .sort((a, b) => b.score - a.score || a.index - b.index);
+
+            const matchedScene = sceneRank.length ? sceneRank[0].scene : null;
+
+            function pickByIntents() {
+              const scored = patterns
+                .map((pattern, index) => {
+                  const intents = pattern.intents || [];
+                  const score = intents.reduce((acc, intent) => (combined.includes(intent.toLowerCase()) ? acc + 1 : acc), 0);
+                  return { pattern, score, index };
+                })
+                .filter((item) => item.score > 0)
+                .sort((a, b) => b.score - a.score || a.index - b.index);
+              return scored;
+            }
+
+            let mainPattern = null;
+            let altPattern = null;
+
+            if (matchedScene) {
+              const ids = (matchedScene.recommended_pattern_ids || []).filter((id) => patternMap.has(id));
+              if (ids.length) {
+                mainPattern = patternMap.get(ids[0]);
+                altPattern = ids.slice(1).map((id) => patternMap.get(id)).find(Boolean) || null;
+              }
+            }
+
+            if (!mainPattern) {
+              const intentRank = pickByIntents();
+              if (intentRank.length) {
+                mainPattern = intentRank[0].pattern;
+                altPattern = intentRank.slice(1).map((item) => item.pattern).find(Boolean) || null;
+              }
+            }
+
+            if (!mainPattern) {
+              core.info('No matching scene or intent. Keep default block.');
+              return;
+            }
+
+            const riskList = Array.from(new Set([...(mainPattern.risks || []), ...(altPattern ? altPattern.risks || [] : [])]));
+
+            const newBlockLines = [];
+            newBlockLines.push('- 原始输入：');
+            newBlockLines.push(`  - 场景：${scenario || '（未填写）'}`);
+            newBlockLines.push(`  - 想达成的效果：${goal || '（未填写）'}`);
+            if (matchedScene) {
+              newBlockLines.push(`- 识别到的场景母类：${matchedScene.name}（${matchedScene.description}）`);
+            }
+            newBlockLines.push(`- 今日主力模式：${mainPattern.name}（${mainPattern.category}类） - ${mainPattern.description}`);
+            if (mainPattern.do && mainPattern.do.length) {
+              newBlockLines.push(`  - 自然使用：${mainPattern.do.slice(0, 2).join('；')}`);
+            }
+            if (mainPattern.examples && mainPattern.examples.length) {
+              newBlockLines.push(`  - 示例：${mainPattern.examples[0]}`);
+            }
+            if (altPattern) {
+              newBlockLines.push(`- 备选模式：${altPattern.name}（${altPattern.category}类） - ${altPattern.description}`);
+              if (altPattern.examples && altPattern.examples.length) {
+                newBlockLines.push(`  - 示例：${altPattern.examples[0]}`);
+              }
+            }
+            newBlockLines.push('- 练习：');
+            newBlockLines.push(`  - 原句 → 改写：请用 ${mainPattern.name} 把你的表达改写 1 句，再准备在真实沟通中使用。`);
+            newBlockLines.push('- 风险提醒：');
+            if (riskList.length) {
+              riskList.forEach((risk) => newBlockLines.push(`  - ${risk}`));
+            } else {
+              newBlockLines.push('  - 注意根据场景补充关键信息。');
+            }
+
+            const newBlockContent = `<!-- MILTON_BLOCK_START -->\n${newBlockLines.join('\n')}\n<!-- MILTON_BLOCK_END -->`;
+            const newBody = body.replace(/<!-- MILTON_BLOCK_START -->([\s\S]*?)<!-- MILTON_BLOCK_END -->/, newBlockContent);
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: newBody,
+            });
