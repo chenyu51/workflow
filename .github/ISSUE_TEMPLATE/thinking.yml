@@ -1,0 +1,27 @@
+name: Thinking Practice
+description: 结构化思考练习（手动触发）
+title: "Thinking - YYYY-MM-DD"
+labels:
+  - thinking
+body:
+  - type: textarea
+    id: theme
+    attributes:
+      label: 今日练习主题
+      description: 例如 MECE 拆解、5 Whys、权衡取舍、因果链等。
+    validations:
+      required: true
+  - type: textarea
+    id: prompts
+    attributes:
+      label: 关键问题
+      description: 列出你要回答的3-6个提示问题。
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: 产出（5句话内）
+      description: 用5句话内写下你的思考结论或决策。
+    validations:
+      required: true
