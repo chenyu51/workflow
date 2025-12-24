@@ -20,6 +20,9 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
+            const path = require('path');
+
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
@@ -96,9 +99,20 @@ jobs:
             }
             await ensureLabel('weekly');
 
-            const promptBlock = `## 🤖 复制给 ChatGPT 的提示词\n\n\`\`\`text\n你是我的成长教练/职业教练/结构化思考教练。\n输入：我将提供本周 Weekly Issue 内容；并且你已经在 prompt 中内嵌了本周 Daily 链接列表（见下方）。\n你要完成的输出（按编号小标题，简短可执行）：\n1) 本周总结（事实层，3-7条）\n2) 本周成长（能力/思维/习惯 各 1-2 条）\n3) 结构化思考反馈：识别我常用结构、缺口、给 1 个下周可执行改进点\n4) 价值提炼：从“对客户/效率/风险/协作沉淀”4个视角各给 1 条价值表述\n5) 下周计划：只选 1 个强化点 + 3 个行动 + 1 个衡量指标\n6) 产出 3 条可写进周报/绩效/简历的一句话 bullet（尽量可量化、可证据化）\n强制要求：结论要“具体、短、可执行”，避免空泛；必要时提出 3 个追问来补齐证据。\n这是我本周的 Daily 链接列表（按日期）：\n${dailyList}\n\`\`\``;
+            function readMilton(fileName) {
+              const fullPath = path.join(process.cwd(), '.github', 'data', 'milton', fileName);
+              return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+            }
 
-            const body = `### 周期\n${title}（北京时间周序）\n\n## 本周范围（北京时间）\n周一 00:00 - 周日 23:59。参考日期：${datePart}\n\n## 本周 Daily 链接\n${dailyList}\n\n${promptBlock}\n\n## 本周我在哪些方面真实成长了？\n- [ ]\n\n## 哪些是“看似努力但没拉开差距”的事？\n- [ ]\n\n## 本周结构化思考：我掌握了什么“框架”？\n- [ ]\n\n## 本周外部雷达：哪条信息最值得持续关注？为什么？\n- [ ]\n\n## 本周价值复盘：我为团队/公司带来的最大价值是什么？证据是什么？\n- [ ]\n\n## 下周只保留 1 个强化点，它是什么？（重点+行动）\n- [ ]\n\n参考日期（北京时间）：${datePart}`;
+            const miltonPrompts = readMilton('prompts.json');
+            const weeklyPromptTemplate = miltonPrompts.weekly_milton_review_prompt || '';
+            const weeklyPrompt = weeklyPromptTemplate.replace('{{DAILY_LIST}}', dailyList);
+
+            const miltonReviewBlock = `## 🧠 米尔顿语言复盘\n- 本周我在哪些沟通中练了哪些模式？\n- 哪条最自然？哪条最生硬？为什么？\n- 下周我只选 1 个模式刻意练，是什么？`;
+
+            const promptBlock = `## 🤖 复制给 ChatGPT 的提示词\n\n\`\`\`text\n${weeklyPrompt}\n\`\`\``;
+
+            const body = `### 周期\n${title}（北京时间周序）\n\n## 本周范围（北京时间）\n周一 00:00 - 周日 23:59。参考日期：${datePart}\n\n## 本周 Daily 链接\n${dailyList}\n\n${miltonReviewBlock}\n\n${promptBlock}\n\n## 本周我在哪些方面真实成长了？\n- [ ]\n\n## 哪些是“看似努力但没拉开差距”的事？\n- [ ]\n\n## 本周结构化思考：我掌握了什么“框架”？\n- [ ]\n\n## 本周外部雷达：哪条信息最值得持续关注？为什么？\n- [ ]\n\n## 本周价值复盘：我为团队/公司带来的最大价值是什么？证据是什么？\n- [ ]\n\n## 下周只保留 1 个强化点，它是什么？（重点+行动）\n- [ ]\n\n参考日期（北京时间）：${datePart}`;
 
             await github.rest.issues.create({
               owner,
