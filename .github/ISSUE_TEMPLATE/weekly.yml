@@ -1,0 +1,27 @@
+name: Weekly
+description: 每周复盘（10分钟）
+title: "YYYY-WW Weekly"
+labels:
+  - weekly
+body:
+  - type: textarea
+    id: growth
+    attributes:
+      label: 本周我在哪些方面真实成长了？
+      description: 写下最实在的成长或突破。
+    validations:
+      required: true
+  - type: textarea
+    id: busywork
+    attributes:
+      label: 哪些是“看似努力但没拉开差距”的事？
+      description: 识别低杠杆或无差别化的投入。
+    validations:
+      required: true
+  - type: textarea
+    id: focus
+    attributes:
+      label: 下周只保留 1 个强化点，它是什么？（重点+行动）
+      description: 选择最重要的强化点，并写下具体行动。
+    validations:
+      required: true
