@@ -19,6 +19,27 @@ body:
     validations:
       required: true
   - type: textarea
+    id: frameworks
+    attributes:
+      label: 本周结构化思考：我掌握了什么“框架”？
+      description: 总结你练习或复用的思考框架与使用场景。
+    validations:
+      required: true
+  - type: textarea
+    id: radar
+    attributes:
+      label: 本周外部雷达：哪条信息最值得持续关注？为什么？
+      description: 记录最值得跟进的外部信号与理由。
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: 本周价值复盘：我为团队/公司带来的最大价值是什么？证据是什么？
+      description: 用事实与结果说明价值，并给出证据或数据。
+    validations:
+      required: true
+  - type: textarea
     id: focus
     attributes:
       label: 下周只保留 1 个强化点，它是什么？（重点+行动）

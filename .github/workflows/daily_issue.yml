@@ -1,10 +1,10 @@
-name: Daily Issue Automation
+name: Daily Issue Automation (Growth OS v2)
 
 on:
-  # Cron is in UTC. 11:00 UTC ≈ 06:00 Toronto (EST) / 07:00 Toronto (EDT).
-  # Adjust the hour/minute here if you want a different local time.
+  # Cron uses UTC. Beijing = UTC+8 with no daylight saving time.
+  # Beijing 09:00 (UTC+8) → UTC 01:00.
   schedule:
-    - cron: '0 11 * * 1-5'
+    - cron: '0 1 * * 1-5'
   workflow_dispatch:
 
 permissions:
@@ -14,30 +14,36 @@ jobs:
   create-daily-issue:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Create or reuse daily issue
         uses: actions/github-script@v7
         with:
           script: |
-            const tz = 'America/Toronto';
-            const today = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            const title = `${year}-${month}-${day} Daily`;
+            const fs = require('fs');
+            const path = require('path');
+
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            async function ensureLabel(name) {
-              try {
-                await github.rest.issues.getLabel({ owner, repo, name });
-              } catch (error) {
-                if (error.status === 404) {
-                  await github.rest.issues.createLabel({ owner, repo, name, color: 'cfd3d7', description: 'Auto-created for growth workflow' });
-                } else {
-                  throw error;
-                }
-              }
+            const beijing = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
+            const year = beijing.getFullYear();
+            const month = String(beijing.getMonth() + 1).padStart(2, '0');
+            const day = String(beijing.getDate()).padStart(2, '0');
+            const title = `${year}-${month}-${day} Daily`;
+
+            const epochDays = Math.floor(beijing.getTime() / 86400000);
+            const modules = ['BASE', 'THINKING', 'RADAR', 'VALUE'];
+            const moduleToday = modules[epochDays % modules.length];
+
+            function readJson(fileName) {
+              const fullPath = path.join(process.cwd(), '.github', 'data', fileName);
+              return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
             }
+
+            const thinkingPrompts = readJson('thinking_prompts.json');
+            const radarTopics = readJson('radar_topics.json');
+            const businessRoles = readJson('business_roles.json');
 
             const existing = await github.paginate(github.rest.issues.listForRepo, {
               owner,
@@ -50,9 +56,33 @@ jobs:
               return;
             }
 
+            async function ensureLabel(name) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (error) {
+                if (error.status === 404) {
+                  await github.rest.issues.createLabel({ owner, repo, name, color: 'cfd3d7', description: 'Auto-created for growth workflow' });
+                } else {
+                  throw error;
+                }
+              }
+            }
             await ensureLabel('daily');
 
-            const body = `## 今天我主要做了什么？（事实 3-5条）\n- [ ]\n\n## 哪件事让我变强了一点？\n- [ ]\n\n## 如果重来一次，我会怎么做？（1条改进）\n- [ ]\n`;
+            const baseSection = `## 基础三问\n- 今天我做了什么（事实 3-5条）？\n- 哪件事让我变强了一点？\n- 如果重来一次，我会怎么做（1条改进）？\n\n情绪/能量：`;
+
+            const thinkingPrompt = thinkingPrompts[epochDays % thinkingPrompts.length];
+            const radarTopic = radarTopics[epochDays % radarTopics.length];
+            const role = businessRoles[(epochDays * 3) % businessRoles.length];
+
+            const moduleSections = {
+              BASE: `${baseSection}\n\n今日模块：BASE（基础练习）\n- 按基础三问快速记录，保持节奏。`,
+              THINKING: `${baseSection}\n\n今日模块：THINKING（结构化思考）\n主题：${thinkingPrompt.theme}\n提示：${thinkingPrompt.questions.map((q) => `\n- ${q}`).join('')}\n产出格式：${thinkingPrompt.output}`,
+              RADAR: `${baseSection}\n\n今日模块：RADAR（资讯雷达 + 职业样本）\n今日雷达主题：${radarTopic}\n思考四问：发生了什么 / 影响谁 / 改变什么 / 对我意味着什么\n今日职业/生意样本：${role}\n三问：他们如何赚钱 / 核心能力 / 我差距是什么`,
+              VALUE: `${baseSection}\n\n今日模块：VALUE（价值提炼）\n把今天的行动改写成价值：\n- 对客户/用户价值\n- 对收入/成本/效率\n- 对风险/质量/稳定性\n- 对组织协作/知识沉淀\n\n一句话模板（任选其一）：\n1) 通过【动作】让【对象】的【指标】提升/下降了【结果】\n2) 解决了【问题/风险】，带来了【收益/避免的损失】\n3) 为【团队/客户】建立了【资产/机制】，从而【可持续效益】`
+            };
+
+            const body = `### 日期\n${year}-${month}-${day}（北京时间）\n\n${moduleSections[moduleToday]}\n\n---\n请用5分钟内完成，今日模块：${moduleToday}`;
 
             await github.rest.issues.create({
               owner,

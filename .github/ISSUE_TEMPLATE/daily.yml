@@ -1,5 +1,5 @@
 name: Daily
-description: 每日记录（3分钟）
+description: 每日记录（3-5分钟）
 title: "YYYY-MM-DD Daily"
 labels:
   - daily
@@ -8,14 +8,14 @@ body:
     id: today
     attributes:
       label: 今天我主要做了什么？（事实 3-5条）
-      description: 记录3-5条完成的事实。
+      description: 记录完成的事实，不夸大。
     validations:
       required: true
   - type: textarea
     id: stronger
     attributes:
       label: 哪件事让我变强了一点？
-      description: 具体描述让你变强的动作或输出。
+      description: 写出让你升级的动作或产出。
     validations:
       required: true
   - type: textarea
@@ -25,3 +25,21 @@ body:
       description: 写出最想调整的1个改进点。
     validations:
       required: true
+  - type: dropdown
+    id: module
+    attributes:
+      label: 今日训练模块（自动轮换，可调整）
+      options:
+        - BASE
+        - THINKING
+        - RADAR
+        - VALUE
+    validations:
+      required: false
+  - type: textarea
+    id: module-notes
+    attributes:
+      label: 模块练习记录（5句话内）
+      description: 根据模块提示补充要点、收获或下一步。
+    validations:
+      required: false

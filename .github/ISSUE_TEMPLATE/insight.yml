@@ -1,0 +1,27 @@
+name: Insight
+description: 捕获一条值得记录的外部信息或观察
+title: "Insight - YYYY-MM-DD"
+labels:
+  - insight
+body:
+  - type: textarea
+    id: signal
+    attributes:
+      label: 发生了什么？（简述信号）
+      description: 写下1条最值得关注的资讯/案例/信号。
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: 为什么重要？（影响谁、改变什么）
+      description: 说明它可能带来的影响与变化。
+    validations:
+      required: true
+  - type: textarea
+    id: action
+    attributes:
+      label: 我可以做什么？（下一步/提醒）
+      description: 写下可以验证或行动的1-2件事。
+    validations:
+      required: true
