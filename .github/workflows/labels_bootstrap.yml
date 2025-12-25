@@ -1,4 +1,4 @@
-name: Bootstrap labels for Growth OS v2
+name: Bootstrap labels
 
 on:
   workflow_dispatch:
@@ -7,42 +7,36 @@ permissions:
   issues: write
 
 jobs:
-  ensure-labels:
+  create-labels:
     runs-on: ubuntu-latest
     steps:
       - name: Ensure labels exist
         uses: actions/github-script@v7
         with:
           script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const labels = [
-              { name: 'daily', color: '0ea5e9', description: 'Daily cadence' },
-              { name: 'weekly', color: '10b981', description: 'Weekly review' },
-              { name: 'insight', color: '6366f1', description: 'Insight capture' },
-              { name: 'thinking', color: 'f59e0b', description: 'Thinking practice' },
-              { name: 'skill:表达', color: 'c084fc', description: 'Skill focus: expression' },
-              { name: 'skill:分析', color: 'a855f7', description: 'Skill focus: analysis' },
-              { name: 'skill:技术', color: '8b5cf6', description: 'Skill focus: engineering' },
-              { name: 'skill:协作', color: '7c3aed', description: 'Skill focus: collaboration' },
-              { name: 'mindset:结构', color: '06b6d4', description: 'Mindset: structure' },
-              { name: 'mindset:判断', color: '0ea5e9', description: 'Mindset: judgment' },
-              { name: 'mindset:复盘', color: '14b8a6', description: 'Mindset: retrospective' },
-              { name: 'habit:专注', color: 'f97316', description: 'Habit: focus' },
-              { name: 'habit:主动', color: 'f43f5e', description: 'Habit: proactive' },
-              { name: 'habit:拖延', color: 'ef4444', description: 'Habit: fix procrastination' }
+            const required = [
+              { name: 'daily', color: '1d76db', description: 'Growth daily journal' },
+              { name: 'weekly', color: '5319e7', description: 'Weekly review' },
+              { name: 'milton', color: 'f4b400', description: 'Milton practice' },
+              { name: 'practice', color: '34d058', description: 'Practice sessions' }
             ];
 
-            for (const label of labels) {
-              try {
-                await github.rest.issues.getLabel({ owner, repo, name: label.name });
+            const { owner, repo } = context.repo;
+            const existing = await github.paginate(github.rest.issues.listLabelsForRepo, { owner, repo, per_page: 100 });
+
+            for (const label of required) {
+              const found = existing.find((item) => item.name.toLowerCase() === label.name.toLowerCase());
+              if (found) {
                 core.info(`Label ${label.name} already exists`);
-              } catch (error) {
-                if (error.status === 404) {
-                  await github.rest.issues.createLabel({ owner, repo, ...label });
-                  core.info(`Created label ${label.name}`);
-                } else {
-                  throw error;
-                }
+                continue;
               }
+
+              await github.rest.issues.createLabel({
+                owner,
+                repo,
+                name: label.name,
+                color: label.color,
+                description: label.description
+              });
+              core.info(`Created label ${label.name}`);
             }

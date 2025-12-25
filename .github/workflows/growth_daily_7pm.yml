@@ -1,0 +1,107 @@
+name: Growth Daily (BJT 19:00)
+
+on:
+  schedule:
+    - cron: "0 11 * * 1-5" # 19:00 Asia/Shanghai (UTC+8)
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: write
+
+jobs:
+  create_growth_daily:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Growth daily issue and journal
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { owner, repo } = context.repo;
+            const now = new Date(Date.now() + 8 * 60 * 60 * 1000);
+            const dateStr = now.toISOString().slice(0, 10);
+            const epochDaysBeijing = Math.floor((Date.now() + 8 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000));
+            const title = `${dateStr} Daily`;
+
+            const { data: repoInfo } = await github.rest.repos.get({ owner, repo });
+            const defaultBranch = repoInfo.default_branch;
+
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            if (openIssues.some((issue) => issue.title === title)) {
+              core.info(`Issue '${title}' already exists. Skip.`);
+              return;
+            }
+
+            const modules = ['BASE', 'THINKING', 'RADAR', 'VALUE'];
+            const moduleName = modules[epochDaysBeijing % modules.length];
+
+            const radarPath = path.join(process.cwd(), '.github/data/radar_topics.json');
+            const rolesPath = path.join(process.cwd(), '.github/data/business_roles.json');
+            const radarTopics = JSON.parse(fs.readFileSync(radarPath, 'utf8'));
+            const businessRoles = JSON.parse(fs.readFileSync(rolesPath, 'utf8'));
+
+            let moduleDetail = '';
+            if (moduleName === 'BASE') {
+              moduleDetail = 'BASE：回答今天的三问，并关注自己的能量状态。';
+            } else if (moduleName === 'THINKING') {
+              moduleDetail = 'THINKING：用 5 句话以内整理一个让你犹豫的决策或问题，先写观点，再写依据。';
+            } else if (moduleName === 'RADAR') {
+              const topic = radarTopics[epochDaysBeijing % radarTopics.length];
+              const role = businessRoles[epochDaysBeijing % businessRoles.length];
+              moduleDetail = `RADAR：题目「${topic.topic}」——${topic.prompt}\n关注角色：${role}`;
+            } else if (moduleName === 'VALUE') {
+              moduleDetail = 'VALUE：从“业务结果/团队影响/个人成长”三个角度写出今天的一句价值提炼。';
+            }
+
+            const mdPath = `journal/daily/${dateStr}-daily.md`;
+            let fileExists = false;
+            try {
+              await github.rest.repos.getContent({ owner, repo, path: mdPath });
+              fileExists = true;
+              core.info(`Markdown ${mdPath} already exists.`);
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            if (!fileExists) {
+              const content = `# ${dateStr} Daily\n\n## 今日记录\n### 1) 今天我主要做了什么？\n- \n\n### 2) 哪件事让我变强了一点？\n- \n\n### 3) 如果重来一次，我会怎么做？\n- \n\n## 今日模块（系统生成）\n${moduleDetail}\n\n## 证据/链接（可选）\n- \n`;
+
+              await github.rest.repos.createOrUpdateFileContents({
+                owner,
+                repo,
+                path: mdPath,
+                message: `chore: add daily journal ${dateStr}`,
+                content: Buffer.from(content).toString('base64'),
+                branch: defaultBranch
+              });
+              core.info(`Created ${mdPath}`);
+            }
+
+            const mdUrl = `https://github.com/${owner}/${repo}/blob/${defaultBranch}/${mdPath}`;
+            const body = [
+              '请在仓库 md 文件中完成填写：',
+              mdUrl,
+              '',
+              `今日模块：${moduleName}`,
+              moduleDetail
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body,
+              labels: ['daily']
+            });
+            core.info(`Created issue ${title}`);
