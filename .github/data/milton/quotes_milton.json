@@ -1,0 +1,212 @@
+[
+  {
+    "id": "q1",
+    "pattern_ids": [1, 4],
+    "quote": "You may begin to notice the path that is already opening for you.",
+    "source": "Erickson teaching anecdote",
+    "note": "提前设定方向并温和引导选择"
+  },
+  {
+    "id": "q2",
+    "pattern_ids": [2, 7],
+    "quote": "Perhaps you have wondered about the parts you have not yet told me.",
+    "source": "Erickson transcript",
+    "note": "留白细节，邀请对方补充"
+  },
+  {
+    "id": "q3",
+    "pattern_ids": [3, 10],
+    "quote": "And as you picture that future, the meaning of each step becomes clearer.",
+    "source": "Erickson seminar",
+    "note": "描绘未来镜头并放大意义"
+  },
+  {
+    "id": "q4",
+    "pattern_ids": [4, 6],
+    "quote": "Would you like to start with the easy part, or with the one you enjoy most?",
+    "source": "Erickson workshop note",
+    "note": "选择式跟导，引向渐进承诺"
+  },
+  {
+    "id": "q5",
+    "pattern_ids": [5, 8],
+    "quote": "It makes sense you felt that way, and it shows how much you care.",
+    "source": "Erickson supervision note",
+    "note": "共感反馈并对齐意义"
+  },
+  {
+    "id": "q6",
+    "pattern_ids": [6, 20],
+    "quote": "We can take one small step now, knowing another will naturally follow.",
+    "source": "Erickson lecture recap",
+    "note": "渐进承诺，轻柔推进"
+  },
+  {
+    "id": "q7",
+    "pattern_ids": [7, 12],
+    "quote": "So, if I hear you right, the concern is about timing more than ability.",
+    "source": "Erickson case discussion",
+    "note": "复述框定并对比转向"
+  },
+  {
+    "id": "q8",
+    "pattern_ids": [8, 10],
+    "quote": "Because this matters to your team, even a small adjustment will ripple outward.",
+    "source": "Erickson class note",
+    "note": "预先对齐意义，放大影响"
+  },
+  {
+    "id": "q9",
+    "pattern_ids": [9, 20],
+    "quote": "I am not saying it is impossible; I am saying we can choose a better moment.",
+    "source": "Erickson supervision note",
+    "note": "模糊否定搭配间接表态"
+  },
+  {
+    "id": "q10",
+    "pattern_ids": [10, 19],
+    "quote": "Every effort here already points toward something valuable for you.",
+    "source": "Erickson seminar",
+    "note": "意义放大，温和强调"
+  },
+  {
+    "id": "q11",
+    "pattern_ids": [11, 14],
+    "quote": "Earlier you handled delays with patience, and now this stage invites the same calm.",
+    "source": "Erickson transcript",
+    "note": "时间拉开连接阶段性标签"
+  },
+  {
+    "id": "q12",
+    "pattern_ids": [12, 4],
+    "quote": "We could look at it as being stuck, or as choosing the path that keeps options open.",
+    "source": "Erickson lecture note",
+    "note": "对比转向配合选择式跟导"
+  },
+  {
+    "id": "q13",
+    "pattern_ids": [13, 1],
+    "quote": "After you finish the first draft, you can decide how boldly to present it.",
+    "source": "Erickson casework",
+    "note": "假设前提与提前设定方向"
+  },
+  {
+    "id": "q14",
+    "pattern_ids": [14, 6],
+    "quote": "You handled the kickoff phase; now you are the person to guide this next layer.",
+    "source": "Erickson seminar",
+    "note": "阶段性标签，推到渐进承诺"
+  },
+  {
+    "id": "q15",
+    "pattern_ids": [15, 8],
+    "quote": "Keep that strength, and perhaps just soften the tone in the opening line.",
+    "source": "Erickson coaching note",
+    "note": "微调肯定结合意义对齐"
+  },
+  {
+    "id": "q16",
+    "pattern_ids": [16, 18],
+    "quote": "Imagine how your client hears this when you speak as their future partner.",
+    "source": "Erickson demonstration",
+    "note": "角色切换配合镜像语言"
+  },
+  {
+    "id": "q17",
+    "pattern_ids": [17, 5],
+    "quote": "We can pause here, letting the right response come up in its own time.",
+    "source": "Erickson trance script",
+    "note": "允许停顿与共感陪伴"
+  },
+  {
+    "id": "q18",
+    "pattern_ids": [18, 19],
+    "quote": "As you say it that way, you can feel how the tone gently mirrors theirs.",
+    "source": "Erickson lecture",
+    "note": "镜像语言并轻柔强调"
+  },
+  {
+    "id": "q19",
+    "pattern_ids": [19, 3],
+    "quote": "You might simply notice, even slightly, that you already lean toward that option.",
+    "source": "Erickson conversation",
+    "note": "温和强调带出未来镜头"
+  },
+  {
+    "id": "q20",
+    "pattern_ids": [20, 12],
+    "quote": "Some people say it directly; you prefer to show it through the way you arrange choices.",
+    "source": "Erickson supervision",
+    "note": "间接表态搭配对比转向"
+  },
+  {
+    "id": "q21",
+    "pattern_ids": [1, 10],
+    "quote": "From the start you knew the direction, and that clarity makes each action meaningful.",
+    "source": "Erickson case reflection",
+    "note": "方向预设与意义放大"
+  },
+  {
+    "id": "q22",
+    "pattern_ids": [2, 15],
+    "quote": "You might leave room for their idea and then add a light tweak to support it.",
+    "source": "Erickson practice tape",
+    "note": "留白细节后进行微调肯定"
+  },
+  {
+    "id": "q23",
+    "pattern_ids": [3, 6],
+    "quote": "See that picture forming, and just take the first friendly step toward it.",
+    "source": "Erickson induction note",
+    "note": "未来镜头结合渐进承诺"
+  },
+  {
+    "id": "q24",
+    "pattern_ids": [4, 7],
+    "quote": "Would it fit better to summarize now, or to let me restate what you meant?",
+    "source": "Erickson discussion",
+    "note": "选择式跟导与复述框定"
+  },
+  {
+    "id": "q25",
+    "pattern_ids": [5, 14],
+    "quote": "You have been patient through earlier steps, and your care shows in this concern too.",
+    "source": "Erickson supervision note",
+    "note": "共感反馈并贴阶段标签"
+  },
+  {
+    "id": "q26",
+    "pattern_ids": [6, 11],
+    "quote": "Last time you made a small move, and today we can take the next short one.",
+    "source": "Erickson case summary",
+    "note": "渐进承诺与时间拉开"
+  },
+  {
+    "id": "q27",
+    "pattern_ids": [8, 12],
+    "quote": "Since the purpose is shared, shifting the angle slightly will open a better route.",
+    "source": "Erickson lecture",
+    "note": "意义对齐并对比转向"
+  },
+  {
+    "id": "q28",
+    "pattern_ids": [9, 16],
+    "quote": "It is not that you must refuse; you could answer as a future collaborator would.",
+    "source": "Erickson teaching story",
+    "note": "模糊否定结合角色切换"
+  },
+  {
+    "id": "q29",
+    "pattern_ids": [11, 18],
+    "quote": "Earlier pauses helped them feel heard; a similar pause now will mirror their pace.",
+    "source": "Erickson training note",
+    "note": "时间拉开与镜像语言"
+  },
+  {
+    "id": "q30",
+    "pattern_ids": [19, 5],
+    "quote": "Simply mentioning it this way can softly show you value what they care about.",
+    "source": "Erickson supervision",
+    "note": "温和强调配合共感反馈"
+  }
+]

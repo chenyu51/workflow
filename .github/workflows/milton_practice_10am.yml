@@ -23,8 +23,9 @@ jobs:
             const fs = require('fs');
             const path = require('path');
             const { owner, repo } = context.repo;
+
             const now = new Date(Date.now() + 8 * 60 * 60 * 1000);
-            const dateStr = now.toISOString().slice(0, 10);
+            const dateStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
             const epochDaysBeijing = Math.floor((Date.now() + 8 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000));
             const dayNumber = (epochDaysBeijing % 14) + 1;
             const title = `${dateStr} Milton Practice`;
@@ -46,20 +47,31 @@ jobs:
 
             const patternsPath = path.join(process.cwd(), '.github/data/milton/patterns.json');
             const drillsPath = path.join(process.cwd(), '.github/data/milton/drills_14d.json');
+            const quotesPath = path.join(process.cwd(), '.github/data/milton/quotes_milton.json');
+            const excerptsPath = path.join(process.cwd(), '.github/data/milton/excerpts_cn.json');
 
             const patterns = JSON.parse(fs.readFileSync(patternsPath, 'utf8'));
             const drills = JSON.parse(fs.readFileSync(drillsPath, 'utf8'));
+            const quotes = JSON.parse(fs.readFileSync(quotesPath, 'utf8'));
+            const excerpts = JSON.parse(fs.readFileSync(excerptsPath, 'utf8'));
 
-            const drill = drills.find((item) => item.day === dayNumber);
+            const drill = drills.find((item) => Number(item.day) === dayNumber) || drills[(dayNumber - 1) % drills.length];
             if (!drill) {
               throw new Error(`Drill for day ${dayNumber} not found`);
             }
 
             const patternId = drill.focus_pattern_ids[0];
-            const pattern = patterns.find((item) => item.id === patternId);
+            const pattern = patterns.find((item) => String(item.id) === String(patternId));
             if (!pattern) {
               throw new Error(`Pattern ${patternId} not found`);
             }
+
+            const excerpt = excerpts.find((item) => String(item.pattern_id) === String(patternId));
+            const excerptMissing = !excerpt;
+
+            const matchedQuotes = quotes.filter((item) => (item.pattern_ids || []).some((id) => String(id) === String(patternId)));
+            const quote = matchedQuotes.length > 0 ? matchedQuotes[epochDaysBeijing % matchedQuotes.length] : null;
+            const quoteMissing = !quote;
 
             const mdPath = `journal/milton/${dateStr}-milton-practice.md`;
             let fileExists = false;
@@ -73,7 +85,64 @@ jobs:
 
             if (!fileExists) {
               const selfCheck = (drill.self_check || []).map((item) => `- [ ] ${item}`).join('\n');
-              const content = `# ${dateStr} Milton Practice\n\n## 今日模式：${pattern.name}\n- 一句话理解：${pattern.description}\n- 什么时候用：${pattern.do.join('；')}\n- 什么时候别用：${pattern.dont.join('；')}\n- 示例：${pattern.examples.join(' / ')}\n\n## 今日任务（系统生成）\n- 训练日序：${dayNumber} / 14\n- 任务：${drill.task}\n- 输入格式：${drill.input_format}\n- 自检要点：\n${selfCheck}\n\n## 今日真实沟通\n- 场景（自由写一句话）：\n- 目标（自由写一句话）：\n\n## 改写练习\n- 原句：\n- 改写（用【今日模式】）：\n\n## 自评\n- 自然度（1-5）：\n- 有效性（1-5）：\n`;
+              const risks = (pattern.risks || []).slice(0, 2).map((r) => `- ${r}`).join('\n') || '- （补充风险提醒）';
+              const signals = [
+                `听到开头就把方向锚定在“${pattern.description || pattern.name}”上。`,
+                `句子里出现类似“${(pattern.examples && pattern.examples[0]) || '（示例待补充）'}”的引导。`,
+                `对方邀请你按“${(pattern.intents && pattern.intents[0]) || '共同目标'}”回应。`,
+                `话语默认了前提或选择，符合「${pattern.name}」的结构。`
+              ];
+              const useCases = (pattern.do || []).slice(0, 3);
+              while (useCases.length < 3) useCases.push('【请结合场景补充】');
+              const avoidCases = (pattern.dont || []).slice(0, 3);
+              while (avoidCases.length < 3) avoidCases.push('【请结合场景补充】');
+
+              const comparisonPairs = [
+                {
+                  plain: '普通说法：直接抛出诉求，没有铺垫。',
+                  enhanced: `使用${pattern.name}：${(pattern.examples && pattern.examples[0]) || '用模式先铺垫，再提出诉求。'}`
+                },
+                {
+                  plain: '普通说法：逐条解释，缺少结构。',
+                  enhanced: `使用${pattern.name}：${(pattern.examples && pattern.examples[1]) || '用该模式先对齐，再递进说明。'}`
+                }
+              ];
+
+              const templates = [
+                `- 模板 A：当你想【目标】，先用「${pattern.name}」铺垫（如：${(pattern.examples && pattern.examples[0]) || '示例待补充'}），再提出【请求/下一步】。`,
+                `- 模板 B：先承认/描绘【对方关切】，再用「${pattern.name}」句式引出【行动选择】，收束到【可执行步骤】。`
+              ];
+
+              const excerptBlock = excerptMissing
+                ? `未找到该模式的整理版原文摘录。请在 .github/data/milton/excerpts_cn.json 中添加 pattern_id=${patternId} 的 excerpt。`
+                : excerpt.excerpt;
+
+              const quoteBlock = quoteMissing ? '未找到该模式的米尔顿原文短句，请在 quotes_milton.json 补充。' : `${quote.quote}\n来源：${quote.source}${quote.note ? `（${quote.note}）` : ''}`;
+
+              const content = `# ${dateStr} Milton Practice（第 ${dayNumber} 课）\n\n` +
+                `## 1) 整理版原文（来自你的整理文件摘录）\n` +
+                `- 标注：这是“整理版原文摘录”，非模型生成\n` +
+                `- 如果缺失：未找到该模式的整理版原文摘录。请在 .github/data/milton/excerpts_cn.json 中添加 pattern_id=${patternId} 的 excerpt。\n\n` +
+                `> 原文摘录：\n> ${excerptBlock}\n\n` +
+                `## 2) 米尔顿本人原文（英文短句）\n` +
+                `- 标注：这是“米尔顿原始表达短句（用于风格锚定）”\n` +
+                `> 原文：\n> ${quoteBlock}\n` +
+                `${quoteMissing ? '' : `\n直译/意译：${pattern.description || '（补充理解）'}`}\n\n` +
+                `## 3) 这一课你学的到底是什么（白话学习目标）\n` +
+                `- 今天练习「${pattern.name}」，在职场沟通中能够：${pattern.description || '（补充描述）'}，并知道何时使用。\n\n` +
+                `## 4) 识别：它在句子里长什么样（3–5 条信号）\n` +
+                `${signals.map((s) => `- ${s}`).join('\n')}\n\n` +
+                `## 5) 对比：不用 vs 用（2 组职场例子）\n` +
+                `${comparisonPairs.map((pair) => `- ${pair.plain}\n  - ${pair.enhanced}`).join('\n')}\n\n` +
+                `## 6) 边界：什么时候用，什么时候别用（3+3）\n` +
+                `- 适用：\n${useCases.map((c) => `  - ${c}`).join('\n')}\n` +
+                `- 不适用/翻车：\n${avoidCases.map((c) => `  - ${c}`).join('\n')}\n` +
+                `- 风险提醒：\n${risks}\n\n` +
+                `## 7) 迁移模板（可直接套用）\n` +
+                `${templates.join('\n')}\n\n` +
+                `## 8) 今日练习（只改一句）\n- 真实沟通场景（用户填）：\n- 想达成的效果（用户填）：\n- 原句（用户填）：\n- 改写（用今日模式）（用户填）：\n\n` +
+                `## 9) 自检清单（来自 drill.self_check）\n${selfCheck}\n\n` +
+                `## 10) 自评\n- 自然度（1-5）：\n- 有效性（1-5）：\n`;
 
               await github.rest.repos.createOrUpdateFileContents({
                 owner,
@@ -88,15 +157,13 @@ jobs:
 
             const mdUrl = `https://github.com/${owner}/${repo}/blob/${defaultBranch}/${mdPath}`;
             const body = [
-              '请在仓库 md 文件中完成练习（主要填写在 md）：',
+              '请在 md 文件完成学习与练习：',
               mdUrl,
               '',
-              `## 今日模式：${pattern.name}`,
-              `- 一句话理解：${pattern.description}`,
-              `- 建议做：${pattern.do[0] || ''}`,
-              `- 风险提醒：${pattern.risks ? pattern.risks[0] : ''}`,
-              '',
-              `### 训练节奏：第 ${dayNumber} 天 / 14`
+              `今日模式：${pattern.name}（第 ${dayNumber} 课）`,
+              `今日任务：${drill.task}`,
+              `自检要点：${(drill.self_check || []).slice(0, 2).join('；')}`,
+              `提示：若整理版摘录缺失，请补充 .github/data/milton/excerpts_cn.json`
             ].join('\n');
 
             await github.rest.issues.create({

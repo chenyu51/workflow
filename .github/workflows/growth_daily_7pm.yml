@@ -23,8 +23,9 @@ jobs:
             const fs = require('fs');
             const path = require('path');
             const { owner, repo } = context.repo;
+
             const now = new Date(Date.now() + 8 * 60 * 60 * 1000);
-            const dateStr = now.toISOString().slice(0, 10);
+            const dateStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
             const epochDaysBeijing = Math.floor((Date.now() + 8 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000));
             const title = `${dateStr} Daily`;
 
@@ -75,7 +76,15 @@ jobs:
             }
 
             if (!fileExists) {
-              const content = `# ${dateStr} Daily\n\n## 今日记录\n### 1) 今天我主要做了什么？\n- \n\n### 2) 哪件事让我变强了一点？\n- \n\n### 3) 如果重来一次，我会怎么做？\n- \n\n## 今日模块（系统生成）\n${moduleDetail}\n\n## 证据/链接（可选）\n- \n`;
+              const content = `# ${dateStr} Daily\n\n` +
+                `## 今日记录\n` +
+                `### 1) 今天我主要做了什么？\n- \n\n` +
+                `### 2) 哪件事让我变强了一点？\n- \n\n` +
+                `### 3) 如果重来一次，我会怎么做？\n- \n\n` +
+                `## 今日模块（系统生成）\n` +
+                `- 模块：${moduleName}\n` +
+                `${moduleDetail}\n\n` +
+                `## 证据/链接（可选）\n- \n`;
 
               await github.rest.repos.createOrUpdateFileContents({
                 owner,
