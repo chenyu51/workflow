@@ -49,8 +49,10 @@ jobs:
 
             const radarPath = path.join(process.cwd(), '.github/data/radar_topics.json');
             const rolesPath = path.join(process.cwd(), '.github/data/business_roles.json');
+            const valuePhrasesPath = path.join(process.cwd(), '.github/data/value_phrases.json');
             const radarTopics = JSON.parse(fs.readFileSync(radarPath, 'utf8'));
             const businessRoles = JSON.parse(fs.readFileSync(rolesPath, 'utf8'));
+            const valuePhrases = JSON.parse(fs.readFileSync(valuePhrasesPath, 'utf8'));
 
             let moduleDetail = '';
             if (moduleName === 'BASE') {
@@ -76,6 +78,24 @@ jobs:
             }
 
             if (!fileExists) {
+              const renderValueSection = (section) => {
+                const examples = section.examples.map((example) => `  - ${example}`).join('\n');
+                return `### ${section.name}\n- 万能句式：${section.template}\n- 例句：\n${examples}\n`;
+              };
+
+              const valueSectionContent = `## 🧭 价值提炼（可直接抄用）\n` +
+                `### 最小填写区（任意一条即可）\n` +
+                `- 我今天最确定的一条价值（只写 1 条即可）：\n` +
+                `  - [ ] 结果/目标价值：\n` +
+                `  - [ ] 效率/成本价值：\n` +
+                `  - [ ] 风险/质量价值：\n` +
+                `  - [ ] 沉淀/复用价值：\n\n` +
+                `### 句式模板 + 例句库\n` +
+                valuePhrases.sections.map(renderValueSection).join('\n') +
+                `\n#### 兜底句式\n` +
+                `- 如果想不出来，就先写这一句也算有效复盘：\n` +
+                `  - ${valuePhrases.fallback}\n`;
+
               const content = `# ${dateStr} Daily\n\n` +
                 `## 今日记录\n` +
                 `### 1) 今天我主要做了什么？\n- \n\n` +
@@ -84,6 +104,7 @@ jobs:
                 `## 今日模块（系统生成）\n` +
                 `- 模块：${moduleName}\n` +
                 `${moduleDetail}\n\n` +
+                `${valueSectionContent}\n\n` +
                 `## 证据/链接（可选）\n- \n`;
 
               await github.rest.repos.createOrUpdateFileContents({
@@ -103,7 +124,9 @@ jobs:
               mdUrl,
               '',
               `今日模块：${moduleName}`,
-              moduleDetail
+              moduleDetail,
+              '',
+              '价值提炼示例与句式在 md 文件内的 `## 🧭 价值提炼（可直接抄用）` 区块，按任意一个视角填 1 条即可。'
             ].join('\n');
 
             await github.rest.issues.create({
