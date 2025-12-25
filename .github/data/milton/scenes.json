@@ -1,173 +1,137 @@
 [
   {
-    "id": "s01",
-    "name": "解释复杂问题",
-    "aliases": ["讲清楚复杂度", "解释方案"],
-    "description": "把复杂或抽象的方案翻译成对方能抓住的点。",
-    "goals": ["降低理解成本", "让对方看到关键价值"],
-    "signals": ["太复杂", "听不懂", "抽象"],
-    "recommended_pattern_ids": ["p14", "p09", "p12"]
+    "id": 1,
+    "name": "项目节奏对齐",
+    "aliases": ["排期对齐", "项目计划"],
+    "description": "需要让团队对项目节奏、里程碑形成共识。",
+    "goals": ["让节奏被接受", "明确下一步"],
+    "signals": ["排期", "里程碑", "节奏", "计划"],
+    "recommended_pattern_ids": [1, 6, 14]
   },
   {
-    "id": "s02",
-    "name": "对齐认知",
-    "aliases": ["达成共识", "对齐理解"],
-    "description": "澄清不同视角，形成共同框架。",
-    "goals": ["收敛理解", "减少反复沟通"],
-    "signals": ["误解", "对不上", "理解不一致"],
-    "recommended_pattern_ids": ["p05", "p23", "p11"]
+    "id": 2,
+    "name": "需求澄清",
+    "aliases": ["需求对齐", "需求讨论"],
+    "description": "业务需求模糊，需要共同澄清。",
+    "goals": ["明确目标", "共创方案"],
+    "signals": ["需求不清", "讨论方案", "澄清"],
+    "recommended_pattern_ids": [2, 7, 16]
   },
   {
-    "id": "s03",
-    "name": "推进决策",
-    "aliases": ["促成决定", "推动拍板"],
-    "description": "让讨论从拖延转向选择和行动。",
-    "goals": ["锁定选项", "明确责任与节奏"],
-    "signals": ["犹豫", "迟迟不定", "要不要"],
-    "recommended_pattern_ids": ["p07", "p16", "p22"]
+    "id": 3,
+    "name": "上线风险沟通",
+    "aliases": ["风险说明", "风险沟通"],
+    "description": "向业务说明上线风险与预案。",
+    "goals": ["降低抵触", "争取时间或资源"],
+    "signals": ["风险", "回滚", "上线", "影响"],
+    "recommended_pattern_ids": [5, 9, 11]
   },
   {
-    "id": "s04",
-    "name": "争取资源",
-    "aliases": ["要人要预算", "申请支持"],
-    "description": "为项目争取时间、人力或预算支持。",
-    "goals": ["获得资源", "降低阻力"],
-    "signals": ["资源有限", "不支持", "排期冲突"],
-    "recommended_pattern_ids": ["p21", "p11", "p10"]
+    "id": 4,
+    "name": "跨团队协作",
+    "aliases": ["跨团队", "协作"],
+    "description": "需要其他团队配合或资源支持。",
+    "goals": ["获得配合", "对齐意义"],
+    "signals": ["协作", "支援", "配合", "资源"],
+    "recommended_pattern_ids": [8, 6, 4]
   },
   {
-    "id": "s05",
-    "name": "说服/拒绝",
-    "aliases": ["反对", "拒绝需求"],
-    "description": "在拒绝或提出不同意见时保持合作氛围。",
-    "goals": ["表达立场", "降低冲突"],
-    "signals": ["不同意", "拒绝", "担心"],
-    "recommended_pattern_ids": ["p19", "p23", "p20"]
+    "id": 5,
+    "name": "客户异议处理",
+    "aliases": ["客户投诉", "异议"],
+    "description": "客户对方案或进度有异议，需要稳住关系。",
+    "goals": ["降低情绪", "给出可行替代"],
+    "signals": ["不满", "投诉", "质疑", "延期"],
+    "recommended_pattern_ids": [5, 9, 12]
   },
   {
-    "id": "s06",
-    "name": "澄清误解",
-    "aliases": ["纠偏", "解释误会"],
-    "description": "修正对方的错误理解，找回合作基础。",
-    "goals": ["纠正认知", "保留信任"],
-    "signals": ["误会", "曲解", "信息不完整"],
-    "recommended_pattern_ids": ["p20", "p05", "p17"]
+    "id": 6,
+    "name": "团队反馈会",
+    "aliases": ["复盘", "回顾"],
+    "description": "团队复盘，需要提出建议又不伤人。",
+    "goals": ["保护情绪", "推动改进"],
+    "signals": ["复盘", "反馈", "改进"],
+    "recommended_pattern_ids": [15, 10, 19]
   },
   {
-    "id": "s07",
-    "name": "降低冲突",
-    "aliases": ["缓和争执", "降温"],
-    "description": "在情绪紧张时让对话可继续。",
-    "goals": ["降低情绪", "让对话回到问题"],
-    "signals": ["吵", "情绪", "火药味"],
-    "recommended_pattern_ids": ["p19", "p23", "p20"]
+    "id": 7,
+    "name": "资源争取",
+    "aliases": ["要人", "要资源"],
+    "description": "需要为项目争取人力或预算。",
+    "goals": ["证明必要性", "降低决策成本"],
+    "signals": ["加人", "预算", "资源", "支持"],
+    "recommended_pattern_ids": [3, 6, 12]
   },
   {
-    "id": "s08",
-    "name": "复盘与反思",
-    "aliases": ["总结教训", "回顾"],
-    "description": "总结经验，形成可复用的改进。",
-    "goals": ["提炼经验", "形成改进方案"],
-    "signals": ["复盘", "总结", "教训"],
-    "recommended_pattern_ids": ["p18", "p11", "p12"]
+    "id": 8,
+    "name": "优先级博弈",
+    "aliases": ["排优先级", "优先级冲突"],
+    "description": "不同任务争抢资源，需要重新排序。",
+    "goals": ["收敛排序", "减少冲突"],
+    "signals": ["优先级", "排序", "冲突", "协调"],
+    "recommended_pattern_ids": [4, 11, 14]
   },
   {
-    "id": "s09",
-    "name": "推进协作",
-    "aliases": ["跨部门合作", "对齐协作"],
-    "description": "让多方协同有节奏、有分工。",
-    "goals": ["明确接口", "减少摩擦"],
-    "signals": ["合作", "跨团队", "衔接"],
-    "recommended_pattern_ids": ["p05", "p07", "p22"]
+    "id": 9,
+    "name": "向上汇报",
+    "aliases": ["汇报", "进展汇报"],
+    "description": "向上级汇报进展，需要简洁有说服力。",
+    "goals": ["获得认可", "争取决策"],
+    "signals": ["汇报", "进展", "review", "指标"],
+    "recommended_pattern_ids": [3, 12, 10]
   },
   {
-    "id": "s10",
-    "name": "风险沟通",
-    "aliases": ["提醒风险", "曝光问题"],
-    "description": "在有风险或坏消息时，稳住情绪并推动应对。",
-    "goals": ["让风险被正视", "推动预案"],
-    "signals": ["风险", "坏消息", "延期"],
-    "recommended_pattern_ids": ["p21", "p10", "p17"]
+    "id": 10,
+    "name": "推动决策",
+    "aliases": ["决策", "拍板"],
+    "description": "讨论拉扯，需要推动决策达成。",
+    "goals": ["收敛方案", "让对方表态"],
+    "signals": ["定下来", "怎么选", "决定"],
+    "recommended_pattern_ids": [4, 6, 18]
   },
   {
-    "id": "s11",
-    "name": "获取反馈",
-    "aliases": ["收集意见", "听取建议"],
-    "description": "邀请对方给出建设性反馈，避免评判感。",
-    "goals": ["得到可用反馈", "建立参与感"],
-    "signals": ["反馈", "建议", "看法"],
-    "recommended_pattern_ids": ["p05", "p10", "p20"]
+    "id": 11,
+    "name": "冲突降温",
+    "aliases": ["矛盾", "冲突"],
+    "description": "会议或对话中情绪升高，需要降温。",
+    "goals": ["缓和气氛", "保持合作"],
+    "signals": ["情绪", "生气", "不爽", "拉扯"],
+    "recommended_pattern_ids": [5, 17, 19]
   },
   {
-    "id": "s12",
-    "name": "排期与优先级",
-    "aliases": ["排计划", "优先级讨论"],
-    "description": "确定节奏和排序，减少反复更改。",
-    "goals": ["锁定顺序", "明确节奏"],
-    "signals": ["优先级", "排期", "顺序"],
-    "recommended_pattern_ids": ["p16", "p22", "p03"]
+    "id": 12,
+    "name": "新人辅导",
+    "aliases": ["辅导新人", "带人"],
+    "description": "指导新人任务，同时保持积极性。",
+    "goals": ["明确方向", "保护信心"],
+    "signals": ["新人", "辅导", "指导", "学习"],
+    "recommended_pattern_ids": [1, 15, 10]
   },
   {
-    "id": "s13",
-    "name": "说服业务价值",
-    "aliases": ["商业价值", "业务意义"],
-    "description": "把技术或支持行动转译成业务指标价值。",
-    "goals": ["让业务买单", "说明收益"],
-    "signals": ["价值", "收益", "KPI"],
-    "recommended_pattern_ids": ["p21", "p12", "p18"]
+    "id": 13,
+    "name": "需求拒绝",
+    "aliases": ["拒绝需求", "降scope"],
+    "description": "需要拒绝或缩减需求，但保持合作关系。",
+    "goals": ["柔性拒绝", "给出替代"],
+    "signals": ["不做", "拒绝", "砍掉", "范围"],
+    "recommended_pattern_ids": [9, 20, 6]
   },
   {
-    "id": "s14",
-    "name": "教育新人",
-    "aliases": ["带新人", "新人培训"],
-    "description": "帮助新人快速理解脉络，降低信息过载。",
-    "goals": ["快速上手", "形成安全感"],
-    "signals": ["新人", "入职", "培训"],
-    "recommended_pattern_ids": ["p05", "p14", "p10"]
+    "id": 14,
+    "name": "对外分享",
+    "aliases": ["分享", "宣讲"],
+    "description": "对客户或外部做分享，需要塑造价值。",
+    "goals": ["突出成果", "激发兴趣"],
+    "signals": ["分享", "宣讲", "案例", "价值"],
+    "recommended_pattern_ids": [3, 10, 8]
   },
   {
-    "id": "s15",
-    "name": "用户沟通",
-    "aliases": ["客户交流", "客户反馈"],
-    "description": "和客户或用户沟通需求、问题与价值。",
-    "goals": ["稳住信任", "获取需求或共识"],
-    "signals": ["客户", "用户", "客户担心"],
-    "recommended_pattern_ids": ["p20", "p21", "p18"]
-  },
-  {
-    "id": "s16",
-    "name": "节奏与边界管理",
-    "aliases": ["控制节奏", "设定边界"],
-    "description": "在需求膨胀或节奏混乱时设定边界。",
-    "goals": ["稳住节奏", "避免过载"],
-    "signals": ["太多", "加需求", "排不过来"],
-    "recommended_pattern_ids": ["p23", "p13", "p22"]
-  },
-  {
-    "id": "s17",
-    "name": "战略/愿景对齐",
-    "aliases": ["愿景沟通", "战略说明"],
-    "description": "用更高阶的意义和未来画面对齐团队方向。",
-    "goals": ["提升认同", "拉齐方向"],
-    "signals": ["愿景", "长期", "方向不一致"],
-    "recommended_pattern_ids": ["p15", "p21", "p14"]
-  },
-  {
-    "id": "s18",
-    "name": "资源受限时协商",
-    "aliases": ["资源紧张", "只能做一部分"],
-    "description": "在资源不足时重新聚焦共识和小步交付。",
-    "goals": ["收敛范围", "保留核心价值"],
-    "signals": ["只能做", "资源不够", "排期挤"],
-    "recommended_pattern_ids": ["p10", "p16", "p11"]
-  },
-  {
-    "id": "s19",
-    "name": "危机沟通",
-    "aliases": ["事故沟通", "突发问题"],
-    "description": "在紧急事件中稳住情绪并指向行动。",
-    "goals": ["减少恐慌", "快速行动"],
-    "signals": ["故障", "事故", "紧急"],
-    "recommended_pattern_ids": ["p09", "p21", "p22"]
+    "id": 15,
+    "name": "年底绩效对齐",
+    "aliases": ["绩效", "考核"],
+    "description": "绩效周期前对齐目标与证据。",
+    "goals": ["明确标准", "减少焦虑"],
+    "signals": ["绩效", "目标", "证据", "晋升"],
+    "recommended_pattern_ids": [8, 11, 19]
   }
 ]

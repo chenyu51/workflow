@@ -1,0 +1,109 @@
+name: Milton Practice Daily (BJT 10:00)
+
+on:
+  schedule:
+    - cron: "0 2 * * 1-5" # 10:00 Asia/Shanghai (UTC+8)
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: write
+
+jobs:
+  create_milton_practice:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Milton practice issue and journal
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { owner, repo } = context.repo;
+            const now = new Date(Date.now() + 8 * 60 * 60 * 1000);
+            const dateStr = now.toISOString().slice(0, 10);
+            const epochDaysBeijing = Math.floor((Date.now() + 8 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000));
+            const dayNumber = (epochDaysBeijing % 14) + 1;
+            const title = `${dateStr} Milton Practice`;
+
+            const { data: repoInfo } = await github.rest.repos.get({ owner, repo });
+            const defaultBranch = repoInfo.default_branch;
+
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            if (openIssues.some((issue) => issue.title === title)) {
+              core.info(`Issue '${title}' already exists. Skip.`);
+              return;
+            }
+
+            const patternsPath = path.join(process.cwd(), '.github/data/milton/patterns.json');
+            const drillsPath = path.join(process.cwd(), '.github/data/milton/drills_14d.json');
+
+            const patterns = JSON.parse(fs.readFileSync(patternsPath, 'utf8'));
+            const drills = JSON.parse(fs.readFileSync(drillsPath, 'utf8'));
+
+            const drill = drills.find((item) => item.day === dayNumber);
+            if (!drill) {
+              throw new Error(`Drill for day ${dayNumber} not found`);
+            }
+
+            const patternId = drill.focus_pattern_ids[0];
+            const pattern = patterns.find((item) => item.id === patternId);
+            if (!pattern) {
+              throw new Error(`Pattern ${patternId} not found`);
+            }
+
+            const mdPath = `journal/milton/${dateStr}-milton-practice.md`;
+            let fileExists = false;
+            try {
+              await github.rest.repos.getContent({ owner, repo, path: mdPath });
+              fileExists = true;
+              core.info(`Markdown ${mdPath} already exists.`);
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            if (!fileExists) {
+              const selfCheck = (drill.self_check || []).map((item) => `- [ ] ${item}`).join('\n');
+              const content = `# ${dateStr} Milton Practice\n\n## 今日模式：${pattern.name}\n- 一句话理解：${pattern.description}\n- 什么时候用：${pattern.do.join('；')}\n- 什么时候别用：${pattern.dont.join('；')}\n- 示例：${pattern.examples.join(' / ')}\n\n## 今日任务（系统生成）\n- 训练日序：${dayNumber} / 14\n- 任务：${drill.task}\n- 输入格式：${drill.input_format}\n- 自检要点：\n${selfCheck}\n\n## 今日真实沟通\n- 场景（自由写一句话）：\n- 目标（自由写一句话）：\n\n## 改写练习\n- 原句：\n- 改写（用【今日模式】）：\n\n## 自评\n- 自然度（1-5）：\n- 有效性（1-5）：\n`;
+
+              await github.rest.repos.createOrUpdateFileContents({
+                owner,
+                repo,
+                path: mdPath,
+                message: `chore: add milton practice journal ${dateStr}`,
+                content: Buffer.from(content).toString('base64'),
+                branch: defaultBranch
+              });
+              core.info(`Created ${mdPath}`);
+            }
+
+            const mdUrl = `https://github.com/${owner}/${repo}/blob/${defaultBranch}/${mdPath}`;
+            const body = [
+              '请在仓库 md 文件中完成练习（主要填写在 md）：',
+              mdUrl,
+              '',
+              `## 今日模式：${pattern.name}`,
+              `- 一句话理解：${pattern.description}`,
+              `- 建议做：${pattern.do[0] || ''}`,
+              `- 风险提醒：${pattern.risks ? pattern.risks[0] : ''}`,
+              '',
+              `### 训练节奏：第 ${dayNumber} 天 / 14`
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body,
+              labels: ['milton', 'practice']
+            });
+            core.info(`Created issue ${title}`);
