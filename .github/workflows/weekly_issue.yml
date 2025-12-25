@@ -9,6 +9,7 @@ on:
 
 permissions:
   issues: write
+  contents: write
 
 jobs:
   create-weekly-issue:
@@ -25,6 +26,9 @@ jobs:
 
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+
+            const { data: repoInfo } = await github.rest.repos.get({ owner, repo });
+            const defaultBranch = repoInfo.default_branch;
 
             const beijing = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
             const datePart = `${beijing.getFullYear()}-${String(beijing.getMonth() + 1).padStart(2, '0')}-${String(beijing.getDate()).padStart(2, '0')}`;
@@ -112,7 +116,34 @@ jobs:
 
             const promptBlock = `## 🤖 复制给 ChatGPT 的提示词\n\n\`\`\`text\n${weeklyPrompt}\n\`\`\``;
 
-            const body = `### 周期\n${title}（北京时间周序）\n\n## 本周范围（北京时间）\n周一 00:00 - 周日 23:59。参考日期：${datePart}\n\n## 本周 Daily 链接\n${dailyList}\n\n${miltonReviewBlock}\n\n${promptBlock}\n\n## 本周我在哪些方面真实成长了？\n- [ ]\n\n## 哪些是“看似努力但没拉开差距”的事？\n- [ ]\n\n## 本周结构化思考：我掌握了什么“框架”？\n- [ ]\n\n## 本周外部雷达：哪条信息最值得持续关注？为什么？\n- [ ]\n\n## 本周价值复盘：我为团队/公司带来的最大价值是什么？证据是什么？\n- [ ]\n\n## 下周只保留 1 个强化点，它是什么？（重点+行动）\n- [ ]\n\n参考日期（北京时间）：${datePart}`;
+            const mdPath = `journal/weekly/${year}-W${week}-weekly.md`;
+            let weeklyFileExists = false;
+
+            try {
+              await github.rest.repos.getContent({ owner, repo, path: mdPath });
+              weeklyFileExists = true;
+              core.info(`Weekly markdown ${mdPath} already exists.`);
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            if (!weeklyFileExists) {
+              const weeklyMarkdown = `# ${title}\n\n> 周总结模板：请直接在本文件中填写你的复盘回顾。可以调整格式，但建议保留下面的检查项。\n\n## 周期\n${title}（北京时间周序）\n\n## 本周范围（北京时间）\n周一 00:00 - 周日 23:59。参考日期：${datePart}\n\n## 本周 Daily 链接\n${dailyList}\n\n${miltonReviewBlock}\n\n${promptBlock}\n\n## 本周我在哪些方面真实成长了？\n- [ ]\n\n## 哪些是“看似努力但没拉开差距”的事？\n- [ ]\n\n## 本周结构化思考：我掌握了什么“框架”？\n- [ ]\n\n## 本周外部雷达：哪条信息最值得持续关注？为什么？\n- [ ]\n\n## 本周价值复盘：我为团队/公司带来的最大价值是什么？证据是什么？\n- [ ]\n\n## 下周只保留 1 个强化点，它是什么？（重点+行动）\n- [ ]\n\n参考日期（北京时间）：${datePart}\n`;
+
+              await github.rest.repos.createOrUpdateFileContents({
+                owner,
+                repo,
+                path: mdPath,
+                message: `chore: add weekly journal ${title}`,
+                content: Buffer.from(weeklyMarkdown).toString('base64'),
+                branch: defaultBranch,
+              });
+              core.info(`Created ${mdPath}`);
+            }
+
+            const mdUrl = `https://github.com/${owner}/${repo}/blob/${defaultBranch}/${mdPath}`;
+
+            const body = `周报 Markdown 已生成，请在仓库文件中填写复盘回顾：${mdUrl}\n\n### 周期\n${title}（北京时间周序）\n\n## 本周范围（北京时间）\n周一 00:00 - 周日 23:59。参考日期：${datePart}\n\n## 本周 Daily 链接\n${dailyList}\n\n${miltonReviewBlock}\n\n${promptBlock}\n\n## 本周我在哪些方面真实成长了？\n- [ ]\n\n## 哪些是“看似努力但没拉开差距”的事？\n- [ ]\n\n## 本周结构化思考：我掌握了什么“框架”？\n- [ ]\n\n## 本周外部雷达：哪条信息最值得持续关注？为什么？\n- [ ]\n\n## 本周价值复盘：我为团队/公司带来的最大价值是什么？证据是什么？\n- [ ]\n\n## 下周只保留 1 个强化点，它是什么？（重点+行动）\n- [ ]\n\n参考日期（北京时间）：${datePart}`;
 
             await github.rest.issues.create({
               owner,
