@@ -70,3 +70,5 @@
 - 若同标题的 open Issue 已存在，工作流自动跳过创建。
 - 若对应日期的 Markdown 已存在，保留原文件不覆盖，但 Issue 仍按防重复逻辑处理。
 - 完全使用仓库内置数据与默认 `GITHUB_TOKEN`，不依赖外部 API/Secrets。
+
+
